@@ -16,12 +16,15 @@ return function ()
   local buttonConfirmX = W * 0.7
   local buttonConfirmY = H * 0.52
   local sinceWrong = 360
+  local sinceCorrect = -1
 
   local buttonConfirm = button(
     draw.enclose(love.graphics.newText(font[48], '确认'), W * 0.18, H * 0.12),
     function ()
-      if ((condomAngle % (math.pi * 2)) + 0.25) % (math.pi * 2) <= 0.5 then
-        print('Correct!')
+      local normalizedAngle = ((condomAngle % (math.pi * 2)) + 0.25) % (math.pi * 2) - 0.25
+      if math.abs(normalizedAngle) <= 0.25 then
+        sinceCorrect = 0
+        condomAngle = normalizedAngle
       else
         sinceWrong = 0
       end
@@ -29,6 +32,9 @@ return function ()
   )
   buttonConfirm.x = buttonConfirmX
   buttonConfirm.y = buttonConfirmY
+
+  local condomMoveToX = W * 0.5
+  local condomMoveToY = H * 0.7
 
   local holdStartCondomX, holdStartCondomY, holdStartAngle
 
@@ -60,18 +66,39 @@ return function ()
   s.update = function ()
     buttonConfirm.update()
     if sinceWrong < 360 then sinceWrong = sinceWrong + 1 end
+    if sinceCorrect >= 0 and sinceCorrect < 120 then
+      sinceCorrect = sinceCorrect + 1
+      condomX = condomX + (condomMoveToX - condomX) * 0.03
+      condomY = condomY + (condomMoveToY - condomY) * 0.03
+      condomAngle = condomAngle * 0.97
+    end
   end
 
   s.draw = function ()
     love.graphics.clear(1, 1, 0.99)
 
-    draw.shadow(0.3, 0.3, 0.3, textTitle, W * 0.5, H * 0.19)
+    local rotateControlsAlpha = 1
+    local uterusAlpha = 0
+    if sinceCorrect >= 0 then
+      rotateControlsAlpha = math.max(0, 1 - sinceCorrect / 60)
+      rotateControlsAlpha = rotateControlsAlpha * rotateControlsAlpha
+      uterusAlpha = math.min(1, sinceCorrect / 120)
+      uterusAlpha = 1 - (1 - uterusAlpha) * (1 - uterusAlpha)
+    end
+
+    if uterusAlpha > 0 then
+      love.graphics.setColor(1, 1, 1, uterusAlpha)
+      draw.img('uterus', W * 0.5, H * 0.3)
+    end
 
     love.graphics.setColor(1, 1, 1)
     draw.img('condom_open', condomX, condomY,
       W * 0.12, nil, 0.5, 0.5, condomAngle)
 
-    love.graphics.setColor(0, 0, 0)
+    love.graphics.setColor(1, 1, 1, rotateControlsAlpha)
+    draw.shadow(0.3, 0.3, 0.3, rotateControlsAlpha, textTitle, W * 0.5, H * 0.19)
+
+    love.graphics.setColor(0, 0, 0, rotateControlsAlpha)
     buttonConfirm.draw()
 
     if sinceWrong < 360 then
@@ -90,7 +117,7 @@ return function ()
         w = 120 + 20 * (x1 - 1)
         alpha = 1 - math.sin(x * math.pi / 2)
       end
-      love.graphics.setColor(1, 1, 1, alpha)
+      love.graphics.setColor(1, 1, 1, alpha * rotateControlsAlpha)
       draw.img('cross', buttonConfirmX, buttonConfirmY, w)
     end
   end

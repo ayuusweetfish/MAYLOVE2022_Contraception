@@ -79,9 +79,9 @@ return function ()
       end
     end
 
-    draw.shadow(0.3, 0.3, 0.3, textTitle, W * 0.5, H * 0.19)
+    draw.shadow(0.3, 0.3, 0.3, 1, textTitle, W * 0.5, H * 0.19)
     for i = 1, 3 do
-      draw.shadow(0.5, 0.5, 0.5, texts[i], W * 0.6, rowY(i))
+      draw.shadow(0.5, 0.5, 0.5, 1, texts[i], W * 0.6, rowY(i))
     end
   end
 

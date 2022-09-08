@@ -51,8 +51,8 @@ return function ()
     love.graphics.clear(1, 1, 0.99)
     love.graphics.setColor(1, 1, 1, 0.2)
     draw.img('intro_bg', W / 2, H / 2, H * 0.8)
-    draw.shadow(0.3, 0.3, 0.3, t1, W / 2, H * 0.25)
-    draw.shadow(0.5, 0.5, 0.5, t2, W / 2, H * 0.44)
+    draw.shadow(0.3, 0.3, 0.3, 1, t1, W / 2, H * 0.25)
+    draw.shadow(0.5, 0.5, 0.5, 1, t2, W / 2, H * 0.44)
 
     love.graphics.setColor(1, 1, 1)
     for i = 1, #buttons do buttons[i].draw() end
