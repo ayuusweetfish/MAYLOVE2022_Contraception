@@ -25,6 +25,8 @@ love.graphics.setFont(font[40])
 
 local sceneIntro = require 'scene_intro'
 _G['sceneIntro'] = sceneIntro
+local sceneCondom = require 'scene_1_condom'
+_G['sceneCondom'] = sceneCondom
 
 local curScene = sceneIntro()
 local lastScene = nil
@@ -36,7 +38,7 @@ _G['replaceScene'] = function (newScene, transitionName)
   lastScene = curScene
   curScene = newScene
   transitionTimer = 0
-  currentTransition = transitions[transitionName or 'fadeBlack']
+  currentTransition = transitions[transitionName or 'fadeWhite']
 end
 
 local mouseScene = nil
@@ -79,8 +81,8 @@ function love.update(dt)
   end
 end
 
-transitions['fadeBlack'] = {
-  dur = 160,
+transitions['fadeWhite'] = {
+  dur = 120,
   draw = function (x)
     local opacity = 0
     if x < 0.5 then
@@ -90,7 +92,7 @@ transitions['fadeBlack'] = {
       curScene:draw()
       opacity = 2 - x * 2
     end
-    love.graphics.setColor(0.1, 0.1, 0.1, opacity)
+    love.graphics.setColor(0.95, 0.95, 0.95, opacity)
     love.graphics.rectangle('fill', 0, 0, W, H)
   end
 }

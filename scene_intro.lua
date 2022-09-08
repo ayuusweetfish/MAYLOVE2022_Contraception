@@ -10,7 +10,7 @@ return function ()
   local t2 = love.graphics.newText(font[48], '选择一种避孕方式')
 
   local options = {
-    {'condom', _G['']},
+    {'condom', _G['sceneCondom']},
     {'short_acting', _G['']},
     {'emergency', _G['']},
     {'ligation', _G['']},
@@ -21,7 +21,7 @@ return function ()
     local name, scene = unpack(options[i])
     local button_img = draw.get('icon_' .. name)
     buttons[i] = button(button_img, function ()
-      print(i)
+      replaceScene(scene())
     end)
     buttons[i].x = W * (0.5 + 0.22 * (i - 2.5))
     buttons[i].y = H * 0.7
