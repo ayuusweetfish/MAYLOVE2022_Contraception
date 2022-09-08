@@ -20,7 +20,7 @@ return function ()
   local buttonConfirm = button(
     draw.enclose(love.graphics.newText(font[48], '确认'), W * 0.18, H * 0.12),
     function ()
-      if math.abs(condomAngle) <= 0.25 then
+      if ((condomAngle % (math.pi * 2)) + 0.25) % (math.pi * 2) <= 0.5 then
         print('Correct!')
       else
         sinceWrong = 0
