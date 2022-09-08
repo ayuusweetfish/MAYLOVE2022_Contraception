@@ -25,8 +25,10 @@ love.graphics.setFont(font[40])
 
 local sceneIntro = require 'scene_intro'
 _G['sceneIntro'] = sceneIntro
-local sceneCondom = require 'scene_1_condom'
-_G['sceneCondom'] = sceneCondom
+local sceneCondom1 = require 'scene_condom_1'
+_G['sceneCondom1'] = sceneCondom1
+local sceneCondom2 = require 'scene_condom_2'
+_G['sceneCondom2'] = sceneCondom2
 
 local curScene = sceneIntro()
 local lastScene = nil

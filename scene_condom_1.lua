@@ -14,14 +14,14 @@ return function ()
   local texts = {}
   local sinceWrong = {}
 
-  local answer = math.random(3)
+  local answer = love.math.random(3)
   local now = os.time()
   for i = 1, 3 do
     sinceWrong[i] = -1
 
     buttons[i] = button(draw.get('icon_condom'), function ()
       if i == answer then
-        print('Correct!')
+        replaceScene(sceneCondom2())
       elseif sinceWrong[i] == -1 then
         sinceWrong[i] = 0
       end
@@ -32,9 +32,9 @@ return function ()
 
     local time
     if i == answer then
-      time = now + 86400 + math.random(86400 * 4)
+      time = now + 86400 + love.math.random(86400 * 4)
     else
-      time = now - 86400 - math.random(86400 * 120)
+      time = now - 86400 * 5 - love.math.random(86400 * 120)
     end
     local timestr = os.date('%Y.%m.%d', time)
     texts[i] = love.graphics.newText(font[40], '有效期至：' .. timestr)

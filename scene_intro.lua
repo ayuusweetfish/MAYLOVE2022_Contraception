@@ -10,7 +10,7 @@ return function ()
   local t2 = love.graphics.newText(font[48], '选择一种避孕方式')
 
   local options = {
-    {'condom', _G['sceneCondom']},
+    {'condom', _G['sceneCondom1']},
     {'short_acting', _G['']},
     {'emergency', _G['']},
     {'ligation', _G['']},
