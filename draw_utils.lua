@@ -34,10 +34,26 @@ local shadow = function (R, G, B, drawable, x, y, w, h, ax, ay, r)
   draw(drawable, x + 1, y + 1, w, h, ax, ay, r)
 end
 
+local enclose = function (drawable, w, h)
+  local iw, ih = drawable:getDimensions()
+  local offsX, offsY = (w - iw) / 2, (h - ih) / 2
+  local s = {}
+  s.getDimensions = function (self)
+    return w, h
+  end
+  s.draw = function (self, x, y, sc)
+    love.graphics.rectangle('line',
+      x, y, w * sc, h * sc, 10)
+    love.graphics.draw(drawable, x + offsX * sc, y + offsY * sc, 0, sc)
+  end
+  return s
+end
+
 local draw_ = {
   get = function (name) return imgs[name] end,
   img = img,
   shadow = shadow,
+  enclose = enclose,
 }
 setmetatable(draw_, { __call = function (self, ...) draw(...) end })
 return draw_

@@ -49,7 +49,12 @@ return function (drawable, fn)
 
   s.draw = function ()
     local sc = scale * s.s
-    love.graphics.draw(drawable, s.x - w/2 * sc, s.y - h/2 * sc, 0, sc)
+    local x, y, sc = s.x - w/2 * sc, s.y - h/2 * sc, sc
+    if drawable.draw then
+      drawable:draw(x, y, sc)
+    else
+      love.graphics.draw(drawable, x, y, 0, sc)
+    end
   end
 
   return s

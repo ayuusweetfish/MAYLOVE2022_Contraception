@@ -8,7 +8,7 @@ return function ()
 
   local textTitle = love.graphics.newText(font[60], '将套套旋转到正确的方向')
 
-  local condomX = W * 0.44
+  local condomX = W * 0.41
   local condomY = H * 0.52
   local condomAngle = 0.5 + love.math.random() * 0.6
   if love.math.random(2) == 1 then condomAngle = -condomAngle end
@@ -18,7 +18,7 @@ return function ()
   local sinceWrong = 360
 
   local buttonConfirm = button(
-    love.graphics.newText(font[48], '确认'),
+    draw.enclose(love.graphics.newText(font[48], '确认'), W * 0.18, H * 0.12),
     function ()
       if math.abs(condomAngle) <= 0.25 then
         print('Correct!')
