@@ -34,7 +34,14 @@ return function ()
   buttonConfirm.y = buttonConfirmY
 
   local condomMoveToX = W * 0.5
-  local condomMoveToY = H * 0.7
+  local condomMoveToY = H * 0.6
+  local spermGenX = W * 0.5
+  local spermGenY = H * 0.9
+  local spermIntroH = H * 0.06
+  local spermGenXSD = W * 0.015
+  local spermTurnaroundY = H * 0.62
+  local sperms = {}
+  local spermGenCounter = -1
 
   local holdStartCondomX, holdStartCondomY, holdStartAngle
 
@@ -71,6 +78,26 @@ return function ()
       condomX = condomX + (condomMoveToX - condomX) * 0.03
       condomY = condomY + (condomMoveToY - condomY) * 0.03
       condomAngle = condomAngle * 0.97
+    elseif sinceCorrect == 120 then
+      spermGenCounter = spermGenCounter - 1
+      for i = 1, #sperms do
+        local s = sperms[i]
+        s.x = s.x + s.vx
+        s.y = s.y + s.vy
+        if s.y < spermTurnaroundY and s.vy < 0 then
+          s.vy = -s.vy
+        end
+      end
+      if spermGenCounter <= 0 then
+        spermGenCounter = love.math.random(50, 60)
+        sperms[#sperms + 1] = {
+          x = spermGenX + spermGenXSD *
+            math.max(-2, math.min(2, love.math.randomNormal())),
+          y = spermGenY,
+          vx = 0,
+          vy = -(0.5 + love.math.randomNormal() * 0.05),
+        }
+      end
     end
   end
 
@@ -88,7 +115,7 @@ return function ()
 
     if uterusAlpha > 0 then
       love.graphics.setColor(1, 1, 1, uterusAlpha)
-      draw.img('uterus', W * 0.5, H * 0.3)
+      draw.img('reprod', W * 0.5, H * 0.4, W * 0.5)
     end
 
     love.graphics.setColor(1, 1, 1)
@@ -119,6 +146,15 @@ return function ()
       end
       love.graphics.setColor(1, 1, 1, alpha * rotateControlsAlpha)
       draw.img('cross', buttonConfirmX, buttonConfirmY, w)
+    end
+
+    if sinceCorrect >= 0 then
+      for i = 1, #sperms do
+        local s = sperms[i]
+        local alpha = math.min(1, (spermGenY - s.y) / spermIntroH)
+        love.graphics.setColor(0, 0, 0, alpha)
+        love.graphics.circle('fill', s.x, s.y, 3)
+      end
     end
   end
 
