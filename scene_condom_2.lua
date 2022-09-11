@@ -1,6 +1,7 @@
 local draw = require 'draw_utils'
 local button = require 'button'
 local spermAnim = require 'sperm_anim'
+local knob = require 'knob'
 
 return function ()
   local s = {}
@@ -13,6 +14,7 @@ return function ()
   local condomY = H * 0.52
   local condomAngle = 0.5 + love.math.random() * 0.6
   if love.math.random(2) == 1 then condomAngle = -condomAngle end
+  local knobCondom = knob(condomX, condomY, condomAngle)
 
   local buttonConfirmX = W * 0.7
   local buttonConfirmY = H * 0.52
@@ -45,17 +47,9 @@ return function ()
   local sperms = {}
   local spermGenCounter = -1
 
-  local holdStartCondomX, holdStartCondomY, holdStartAngle
-
   s.press = function (x, y)
     if buttonConfirm.press(x, y) then return true end
-    if (x - condomX)^2 + (y - condomY)^2 < 50^2 then
-      holdStartCondomX, holdStartCondomY = x, y + 50
-    else
-      holdStartCondomX, holdStartCondomY = condomX, condomY
-    end
-    holdStartAngle = condomAngle - math.atan2(y - holdStartCondomY, x - holdStartCondomX)
-    return true
+    if knobCondom.press(x, y) then return true end
   end
 
   s.hover = function (x, y)
@@ -63,13 +57,15 @@ return function ()
 
   s.move = function (x, y)
     if buttonConfirm.move(x, y) then return true end
-    condomAngle = holdStartAngle + math.atan2(y - holdStartCondomY, x - holdStartCondomX)
-    return true
+    if knobCondom.move(x, y) then
+      condomAngle = knobCondom.angle
+      return true
+    end
   end
 
   s.release = function (x, y)
     if buttonConfirm.release(x, y) then return true end
-    return true
+    if knobCondom.release(x, y) then return true end
   end
 
   s.update = function ()
