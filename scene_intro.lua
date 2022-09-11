@@ -12,7 +12,7 @@ return function ()
   local options = {
     {'condom', _G['sceneCondom1']},
     {'short_acting', _G['sceneShort1']},
-    {'emergency', _G['']},
+    {'emergency', _G['sceneEmerg1']},
     {'ligation', _G['']},
   }
 
