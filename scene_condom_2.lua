@@ -12,6 +12,7 @@ return function ()
   local condomY = H * 0.52
   local condomAngle = 0.5 + love.math.random() * 0.6
   if love.math.random(2) == 1 then condomAngle = -condomAngle end
+  condomAngle = 0
 
   local buttonConfirmX = W * 0.7
   local buttonConfirmY = H * 0.52
@@ -39,9 +40,12 @@ return function ()
   local spermGenY = H * 0.9
   local spermIntroH = H * 0.06
   local spermGenXSD = W * 0.015
-  local spermTurnaroundY = H * 0.62
+  local spermTurnaroundY = H * 0.63
+  local spermDestrY = H * 0.98
   local sperms = {}
   local spermGenCounter = -1
+  local N_HIST = 60
+  local histPtr = 1
 
   local holdStartCondomX, holdStartCondomY, holdStartAngle
 
@@ -80,23 +84,40 @@ return function ()
       condomAngle = condomAngle * 0.97
     elseif sinceCorrect == 120 then
       spermGenCounter = spermGenCounter - 1
+      histPtr = histPtr % N_HIST + 1
       for i = 1, #sperms do
         local s = sperms[i]
+        s.hist[histPtr] = {s.x, s.y, s.vx, s.vy}
         s.x = s.x + s.vx
         s.y = s.y + s.vy
-        if s.y < spermTurnaroundY and s.vy < 0 then
-          s.vy = -s.vy
+        if s.y < spermTurnaroundY then
+          local rate = (s.vy < 0 and 0.003 or 0.002)
+          s.vx = s.vx + (love.math.random() - 0.5) * s.vy * 0.06
+          s.vy = s.vy - (s.y - spermTurnaroundY) * rate
+        end
+      end
+      local i = 1
+      while i <= #sperms do
+        if sperms[i].y >= spermDestrY then
+          sperms[i] = sperms[#sperms]
+          sperms[#sperms] = nil
+        else
+          i = i + 1
         end
       end
       if spermGenCounter <= 0 then
         spermGenCounter = love.math.random(50, 60)
-        sperms[#sperms + 1] = {
+        local s = {
           x = spermGenX + spermGenXSD *
             math.max(-2, math.min(2, love.math.randomNormal())),
           y = spermGenY,
           vx = 0,
           vy = -(0.5 + love.math.randomNormal() * 0.05),
+          phase = love.math.random() * math.pi * 2,
+          hist = {},
         }
+        for i = 1, N_HIST do s.hist[i] = {s.x, s.y, 0, 0} end
+        sperms[#sperms + 1] = s
       end
     end
   end
@@ -152,6 +173,16 @@ return function ()
       for i = 1, #sperms do
         local s = sperms[i]
         local alpha = math.min(1, (spermGenY - s.y) / spermIntroH)
+        local x1, y1 = s.x, s.y
+        for i = N_HIST - 1, 0, -1 do
+          local x, y, vx, vy = unpack(s.hist[(i + histPtr) % N_HIST + 1])
+          local x2 = x + vy * math.sin(y * 0.25 + s.phase) * (1 - i / N_HIST) * 6
+          local y2 = y - vx * math.sin(y * 0.25 + s.phase) * (1 - i / N_HIST) * 6
+          local a2 = math.max(0, math.min(1, (spermGenY - y2) / spermIntroH))
+          love.graphics.setColor(0, 0, 0, (i / N_HIST) * a2)
+          love.graphics.line(x1, y1, x2, y2)
+          x1, y1 = x2, y2
+        end
         love.graphics.setColor(0, 0, 0, alpha)
         love.graphics.circle('fill', s.x, s.y, 3)
       end
