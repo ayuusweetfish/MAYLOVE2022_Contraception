@@ -21,13 +21,15 @@ return function ()
   local sinceWrong = 360
   local sinceCorrect = -1
 
-  local buttonConfirm = button(
+  local buttonConfirm
+  buttonConfirm = button(
     draw.enclose(love.graphics.newText(font[48], '确认'), W * 0.18, H * 0.12),
     function ()
       local normalizedAngle = ((condomAngle % (math.pi * 2)) + 0.25) % (math.pi * 2) - 0.25
       if math.abs(normalizedAngle) <= 0.25 then
         sinceCorrect = 0
         condomAngle = normalizedAngle
+        buttonConfirm.enabled = false
       else
         sinceWrong = 0
       end

@@ -5,6 +5,7 @@ return function (drawable, fn)
   s.x = 0
   s.y = 0
   s.s = 1
+  s.enabled = true
 
   local w, h = drawable:getDimensions()
   local scale = 1
@@ -13,6 +14,7 @@ return function (drawable, fn)
   local inside = false
 
   s.press = function (x, y)
+    if not s.enabled then return false end
     if x >= s.x - w/2 and x <= s.x + w/2 and
        y >= s.y - w/2 and y <= s.y + h/2 then
       held = true
