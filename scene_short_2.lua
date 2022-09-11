@@ -9,7 +9,7 @@ return function ()
   local font = _G['font_AaGSKA']
 
   local textHint = love.graphics.newText(font[40],
-    '受激素影响卵子不排出，无法形成受精卵而怀孕'
+    '受激素影响，卵子不排出，无法形成受精卵，实现避孕'
   )
   local T = 0
 
@@ -60,6 +60,16 @@ return function ()
           s.vx = s.vx * 0.97
           s.vy = s.vy * 0.97
         end
+      end
+    end
+
+    local i = 1
+    while i <= #sperms do
+      if sperms[i].turned and sperms[i].turned >= 180 then
+        sperms[i] = sperms[#sperms]
+        sperms[#sperms] = nil
+      else
+        i = i + 1
       end
     end
 

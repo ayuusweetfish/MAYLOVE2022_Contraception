@@ -10,6 +10,7 @@ return function ()
   local font = _G['font_AaGSKA']
 
   local textTitle = love.graphics.newText(font[60], '将套套旋转到正确的方向')
+  local textSuccessHint = love.graphics.newText(font[40], '精子被隔绝在外，实现避孕')
 
   local condomX = W * 0.41
   local condomY = H * 0.52
@@ -81,11 +82,10 @@ return function ()
     buttonConfirm.update()
     if sinceWrong < 360 then sinceWrong = sinceWrong + 1 end
     if sinceCorrect >= 0 and sinceCorrect < 120 then
-      sinceCorrect = sinceCorrect + 1
       condomX = condomX + (condomMoveToX - condomX) * 0.03
       condomY = condomY + (condomMoveToY - condomY) * 0.03
       condomAngle = condomAngle * 0.97
-    elseif sinceCorrect == 120 then
+    elseif sinceCorrect >= 120 then
       spermGenCounter = spermGenCounter - 1
       for i = 1, #sperms do
         local s = sperms[i]
@@ -114,6 +114,9 @@ return function ()
         local vy = -(0.5 + love.math.randomNormal() * 0.05)
         sperms[#sperms + 1] = spermAnim(x, y, vx, vy)
       end
+    end
+    if sinceCorrect >= 0 and sinceCorrect < 960 then
+      sinceCorrect = sinceCorrect + 1
     end
   end
 
@@ -172,6 +175,12 @@ return function ()
         local s = sperms[i]
         s.draw(fnAlpha)
       end
+    end
+
+    if sinceCorrect >= 720 then
+      local alpha = math.min(1, (sinceCorrect - 720) / 240)
+      alpha = 1 - (1 - alpha) * (1 - alpha)
+      draw.shadow(0.3, 0.3, 0.3, alpha, textSuccessHint, W * 0.5, H * 0.8)
     end
 
     love.graphics.setColor(0.3, 0.3, 0.3)

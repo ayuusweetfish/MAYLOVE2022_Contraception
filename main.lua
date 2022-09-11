@@ -35,7 +35,6 @@ local sceneShort2 = require 'scene_short_2'
 _G['sceneShort2'] = sceneShort2
 
 local curScene = sceneIntro()
-curScene = sceneShort1()
 local lastScene = nil
 local transitionTimer = 0
 local currentTransition = nil

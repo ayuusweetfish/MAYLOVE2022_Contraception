@@ -11,6 +11,7 @@ return function ()
   local rowY = function (i) return H * (0.59 + 0.2 * (i - 2)) end
 
   local textTitle = love.graphics.newText(font[60], '设定每日服药的时间')
+  local textInitialHint = love.graphics.newText(font[40], '定时每日服药 1 次，持续 21 天')
   local textMiss = love.graphics.newText(font[40],
     '漏服后应尽快在 12 小时内补服，\n否则需重新开始服药周期')
   local textStopHint1 = love.graphics.newText(font[40], '完成 21 天周期后停药 7 天')
@@ -78,7 +79,9 @@ return function ()
       dayProgress = missAmount
       dayProgressStart = missAmount
     end
-    dayProgressSpd = (dayNum < 3 and 1 / 360 or 1 / 240)
+    dayProgressSpd = ((dayNum < 3
+      or dayNum == dayMissed - 1
+      or dayNum == dayMissed) and 1 / 360 or 1 / 180)
     buttonPills.enabled = false
     pressToContinue = false
     untilPills = -1
@@ -224,9 +227,17 @@ return function ()
         love.graphics.setColor(1, 1, 1, pillsAlpha)
         buttonPills.draw()
       end
-      if dayNum == dayMissed and untilPills >= 0 then
-        local textMissAlpha = 1 - (math.max(0, untilPills - 480) / 60)^2
-        draw.shadow(0.3, 0.3, 0.3, textMissAlpha, textMiss, W * 0.336, H * 0.788)
+      if dayNum == dayMissed and (untilPills >= 0 or sincePills >= 0) then
+        local textMissAlpha
+        if untilPills >= 0 then
+          textMissAlpha = 1 - (math.max(0, untilPills - 480) / 60)^2
+        else
+          textMissAlpha = 1 - (math.min(1, sincePills / 60))^2
+        end
+        draw.shadow(0.3, 0.3, 0.3, textMissAlpha, textMiss, W * 0.336, H * 0.8)
+      end
+      if dayNum == 1 and (untilPills >= 0 or sincePills < 60) then
+        draw.shadow(0.3, 0.3, 0.3, pillsAlpha, textInitialHint, W * 0.31, H * 0.822)
       end
     end
 
