@@ -26,6 +26,7 @@ return function ()
   local dayProgressStart = 0
   local dayProgressTarget = 0
   local dayProgressSpd = 0
+  local untilConfirmVisible = -1
   local sinceConfirmInitial = -1
 
   local dayNum = 0
@@ -41,7 +42,7 @@ return function ()
   buttonConfirm = button(
     draw.enclose(love.graphics.newText(font[48], '确认'), W * 0.18, H * 0.12),
     function ()
-      alarmCurTime = alarmSetTime
+      alarmSetTime = alarmCurTime
       dayProgressStart = 0
       dayProgressTarget = 1
       dayProgressSpd = 1 / 360
@@ -51,6 +52,7 @@ return function ()
       nextDay()
     end
   )
+  buttonConfirm.enabled = false
   buttonConfirm.x = W * 0.8
   buttonConfirm.y = H * 0.75
 
@@ -107,7 +109,12 @@ return function ()
   s.release = function (x, y)
     if buttonConfirm.release(x, y) then return true end
     if buttonPills.release(x, y) then return true end
-    if knobAlarm.release(x, y) then return true end
+    if knobAlarm.release(x, y) then
+      if untilConfirmVisible == -1 then
+        untilConfirmVisible = 120
+      end
+      return true
+    end
     if pressToContinue then
       takePill()
       return true
@@ -126,6 +133,12 @@ return function ()
       if dayProgress == dayProgressTarget then
         dayProgressTarget = 0
         untilPills = (dayNum == dayMissed and 540 or 60)
+      end
+    end
+    if untilConfirmVisible > 0 then
+      untilConfirmVisible = untilConfirmVisible - 1
+      if untilConfirmVisible == 0 then
+        buttonConfirm.enabled = true
       end
     end
     if sinceConfirmInitial >= 0 and sinceConfirmInitial < 240 then
@@ -160,11 +173,21 @@ return function ()
     love.graphics.setColor(1, 1, 1)
     draw.img('alarm_clock_hand_h', alarmCenX, alarmCenY, nil, nil, 0.5, 1, alarmCurTime)
 
-    local confirmAlpha = math.max(0, 1 - sinceConfirmInitial / 120)
-    confirmAlpha = confirmAlpha * confirmAlpha
+    local confirmAlpha = 1
+    local titleAlpha = 1
+    if untilConfirmVisible == -1 then
+      confirmAlpha = 0
+    elseif untilConfirmVisible > 0 then
+      confirmAlpha = math.min(1, 1 - untilConfirmVisible / 120)
+      confirmAlpha = confirmAlpha * confirmAlpha
+    elseif sinceConfirmInitial >= 0 then
+      confirmAlpha = math.max(0, 1 - sinceConfirmInitial / 120)
+      confirmAlpha = confirmAlpha * confirmAlpha
+      titleAlpha = confirmAlpha
+    end
     love.graphics.setColor(0, 0, 0, confirmAlpha)
     buttonConfirm.draw()
-    draw.shadow(0.3, 0.3, 0.3, confirmAlpha, textTitle, W * 0.5, H * 0.19)
+    draw.shadow(0.3, 0.3, 0.3, titleAlpha, textTitle, W * 0.5, H * 0.19)
 
     local calendarAlpha = math.max(0, (sinceConfirmInitial - 120) / 120)
     local calendarTextAlpha = 1
