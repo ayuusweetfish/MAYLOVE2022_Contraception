@@ -28,7 +28,7 @@ local img = function (name, x, y, w, h, ax, ay, r)
 end
 
 local shadow = function (R, G, B, A, drawable, x, y, w, h, ax, ay, r)
-  love.graphics.setColor(R / 2, G / 2, B / 2, A)
+  love.graphics.setColor(R / 2, G / 2, B / 2, A * A)
   draw(drawable, x + 1, y + 1, w, h, ax, ay, r)
   love.graphics.setColor(R, G, B, A)
   draw(drawable, x - 1, y - 1, w, h, ax, ay, r)

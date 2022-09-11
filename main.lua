@@ -31,6 +31,8 @@ local sceneCondom2 = require 'scene_condom_2'
 _G['sceneCondom2'] = sceneCondom2
 local sceneShort1 = require 'scene_short_1'
 _G['sceneShort1'] = sceneShort1
+local sceneShort2 = require 'scene_short_2'
+_G['sceneShort2'] = sceneShort2
 
 local curScene = sceneIntro()
 curScene = sceneShort1()

@@ -10,6 +10,10 @@ return function ()
   local rowY = function (i) return H * (0.59 + 0.2 * (i - 2)) end
 
   local textTitle = love.graphics.newText(font[60], '设定每日服药的时间')
+  local textMiss = love.graphics.newText(font[40],
+    '漏服后应尽快在 12 小时内补服，\n否则需重新开始服药周期')
+  local textStopHint1 = love.graphics.newText(font[40], '完成 21 天周期后停药 7 天')
+  local textStopHint2 = love.graphics.newText(font[40], '停药期间发生出血是正常现象')
 
   local alarmCenX = W * 0.5
   local alarmCenY = H * 0.5 + 39.5
@@ -19,7 +23,9 @@ return function ()
 
   local alarmCurTime = alarmSetTime
   local dayProgress = 0
+  local dayProgressStart = 0
   local dayProgressTarget = 0
+  local dayProgressSpd = 0
   local sinceConfirmInitial = -1
 
   local dayNum = 0
@@ -28,13 +34,17 @@ return function ()
     dayNum = dayNum + 1
     calendarText = love.graphics.newText(font[120], tonumber(dayNum))
   end
+  local dayMissed = love.math.random(10, 15)
+  local missAmount = 0.08 + love.math.random() * 0.03
 
   local buttonConfirm
   buttonConfirm = button(
     draw.enclose(love.graphics.newText(font[48], '确认'), W * 0.18, H * 0.12),
     function ()
       alarmCurTime = alarmSetTime
+      dayProgressStart = 0
       dayProgressTarget = 1
+      dayProgressSpd = 1 / 360
       sinceConfirmInitial = 0
       buttonConfirm.enabled = false
       knobAlarm.enabled = false
@@ -48,15 +58,30 @@ return function ()
   local sincePills = -1
 
   local buttonPills
-  buttonPills = button(
-    draw.get('pills'),
-    function ()
-      sincePills = 0
-      dayProgress = 0
-      dayProgressTarget = 1
-      untilPills = -1
+  local pressToContinue = false
+
+  local takePill = function ()
+    if dayNum == 27 then
+      replaceScene(sceneShort2())
+      return
     end
-  )
+    sincePills = 0
+    dayProgress = 0
+    dayProgressStart = 0
+    dayProgressTarget = 1
+    if dayNum + 1 == dayMissed then
+      dayProgressTarget = 1 + missAmount
+    elseif dayNum == dayMissed then
+      dayProgress = missAmount
+      dayProgressStart = missAmount
+    end
+    dayProgressSpd = (dayNum < 3 and 1 / 360 or 1 / 240)
+    buttonPills.enabled = false
+    pressToContinue = false
+    untilPills = -1
+  end
+
+  buttonPills = button(draw.get('pills'), takePill)
   buttonPills.enabled = false
   buttonPills.x = W * 0.834
   buttonPills.y = H * 0.8
@@ -83,19 +108,24 @@ return function ()
     if buttonConfirm.release(x, y) then return true end
     if buttonPills.release(x, y) then return true end
     if knobAlarm.release(x, y) then return true end
+    if pressToContinue then
+      takePill()
+      return true
+    end
   end
 
   s.update = function ()
     buttonConfirm.update()
     buttonPills.update()
     if dayProgressTarget > 0 then
-      dayProgress = math.min(dayProgressTarget, dayProgress + 1 / 360)
-      local x = (1 - (1 - dayProgress) * (1 - dayProgress) * (1 - dayProgress))
-        * math.sin(dayProgress * math.pi / 2)
-      alarmCurTime = alarmSetTime + x * (4 * math.pi)
+      dayProgress = math.min(dayProgressTarget, dayProgress + dayProgressSpd)
+      local x = (dayProgress - dayProgressStart) / (dayProgressTarget - dayProgressStart)
+      local y = (1 - (1 - x) * (1 - x) * (1 - x)) * math.sin(x * math.pi / 2)
+      alarmCurTime = alarmSetTime +
+        (dayProgressStart + y * (dayProgressTarget - dayProgressStart)) * (4 * math.pi)
       if dayProgress == dayProgressTarget then
         dayProgressTarget = 0
-        untilPills = 60
+        untilPills = (dayNum == dayMissed and 540 or 60)
       end
     end
     if sinceConfirmInitial >= 0 and sinceConfirmInitial < 240 then
@@ -104,7 +134,11 @@ return function ()
     if untilPills > 0 then
       untilPills = untilPills - 1
       if untilPills == 0 then
-        buttonPills.enabled = true
+        if dayNum <= 21 then
+          buttonPills.enabled = true
+        else
+          pressToContinue = true
+        end
       end
     end
     if sincePills >= 0 and sincePills < 120 then
@@ -150,14 +184,53 @@ return function ()
     end
 
     local pillsAlpha = 0
-    if untilPills >= 0 then
-      pillsAlpha = 1 - (untilPills / 60)^2
-    elseif sincePills >= 0 then
-      pillsAlpha = math.max(0, 1 - (sincePills / 60)^2)
+    if dayNum <= 21 then
+      if untilPills >= 0 then
+        pillsAlpha = math.max(0, 1 - (untilPills / 60)^2)
+      elseif sincePills >= 0 then
+        pillsAlpha = math.max(0, 1 - (sincePills / 60)^2)
+      end
+      if pillsAlpha > 0 then
+        love.graphics.setColor(1, 1, 1, pillsAlpha)
+        buttonPills.draw()
+      end
+      if dayNum == dayMissed and untilPills >= 0 then
+        local textMissAlpha = 1 - (math.max(0, untilPills - 480) / 60)^2
+        draw.shadow(0.3, 0.3, 0.3, textMissAlpha, textMiss, W * 0.336, H * 0.788)
+      end
     end
-    if pillsAlpha > 0 then
-      love.graphics.setColor(1, 1, 1, pillsAlpha)
-      buttonPills.draw()
+
+    if dayNum >= 22 then
+      local hint1Alpha = 0
+      local hint2Alpha = 0
+      if dayNum == 22 then
+        if untilPills >= 0 then
+          hint1Alpha = math.max(0, 1 - (untilPills / 60)^2)
+        elseif sincePills >= 0 and sincePills < 60 then
+          hint1Alpha = 1
+        end
+      elseif dayNum == 23 and sincePills < 60 then
+        hint1Alpha = math.max(0, 1 - (sincePills / 60)^2)
+      elseif dayNum <= 24 then
+        hint1Alpha = 1
+      end
+      if dayNum == 24 then
+        if sincePills >= 60 then
+          hint1Alpha = math.max(0, 1 - (sincePills / 60)^2)
+          hint2Alpha = math.min(1, ((sincePills - 60) / 60)^2)
+        else
+          hint1Alpha = 0
+          hint2Alpha = 1
+        end
+      elseif dayNum >= 25 then
+        hint2Alpha = 1
+      end
+      if hint1Alpha > 0 then
+        draw.shadow(0.3, 0.3, 0.3, hint1Alpha, textStopHint1, W * 0.336, H * 0.788)
+      end
+      if hint2Alpha > 0 then
+        draw.shadow(0.3, 0.3, 0.3, hint2Alpha, textStopHint2, W * 0.336, H * 0.788)
+      end
     end
   end
 

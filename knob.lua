@@ -24,6 +24,7 @@ return function (cx, cy, a)
 
   o.release = function (x, y)
     if not held then return false end
+    held = false
     return true
   end
 
