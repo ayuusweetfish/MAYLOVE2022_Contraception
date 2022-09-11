@@ -1,5 +1,6 @@
 local draw = require 'draw_utils'
 local button = require 'button'
+local misc = require 'misc_utils'
 
 return function ()
   local s = {}
@@ -40,7 +41,10 @@ return function ()
     texts[i] = love.graphics.newText(font[40], '有效期至：' .. timestr)
   end
 
+  local buttonBack = misc.buttonBack()
+
   s.press = function (x, y)
+    if buttonBack.press(x, y) then return true end
     for i = 1, #buttons do if buttons[i].press(x, y) then return true end end
   end
 
@@ -48,14 +52,17 @@ return function ()
   end
 
   s.move = function (x, y)
+    if buttonBack.move(x, y) then return true end
     for i = 1, #buttons do if buttons[i].move(x, y) then return true end end
   end
 
   s.release = function (x, y)
+    if buttonBack.release(x, y) then return true end
     for i = 1, #buttons do if buttons[i].release(x, y) then return true end end
   end
 
   s.update = function ()
+    buttonBack.update()
     for i = 1, #buttons do buttons[i].update() end
     for i = 1, 3 do
       if sinceWrong[i] >= 0 and sinceWrong[i] < 120 then
@@ -83,6 +90,9 @@ return function ()
     for i = 1, 3 do
       draw.shadow(0.5, 0.5, 0.5, 1, texts[i], W * 0.6, rowY(i))
     end
+
+    love.graphics.setColor(0.3, 0.3, 0.3)
+    buttonBack.draw()
   end
 
   s.destroy = function ()

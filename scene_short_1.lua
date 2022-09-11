@@ -1,6 +1,7 @@
 local draw = require 'draw_utils'
 local button = require 'button'
 local knob = require 'knob'
+local misc = require 'misc_utils'
 
 return function ()
   local s = {}
@@ -88,7 +89,10 @@ return function ()
   buttonPills.x = W * 0.834
   buttonPills.y = H * 0.8
 
+  local buttonBack = misc.buttonBack()
+
   s.press = function (x, y)
+    if buttonBack.press(x, y) then return true end
     if buttonConfirm.press(x, y) then return true end
     if buttonPills.press(x, y) then return true end
     if knobAlarm.press(x, y) then return true end
@@ -98,6 +102,7 @@ return function ()
   end
 
   s.move = function (x, y)
+    if buttonBack.move(x, y) then return true end
     if buttonConfirm.move(x, y) then return true end
     if buttonPills.move(x, y) then return true end
     if knobAlarm.move(x, y) then
@@ -107,6 +112,7 @@ return function ()
   end
 
   s.release = function (x, y)
+    if buttonBack.release(x, y) then return true end
     if buttonConfirm.release(x, y) then return true end
     if buttonPills.release(x, y) then return true end
     if knobAlarm.release(x, y) then
@@ -122,6 +128,7 @@ return function ()
   end
 
   s.update = function ()
+    buttonBack.update()
     buttonConfirm.update()
     buttonPills.update()
     if dayProgressTarget > 0 then
@@ -255,6 +262,9 @@ return function ()
         draw.shadow(0.3, 0.3, 0.3, hint2Alpha, textStopHint2, W * 0.336, H * 0.788)
       end
     end
+
+    love.graphics.setColor(0.3, 0.3, 0.3)
+    buttonBack.draw()
   end
 
   s.destroy = function ()

@@ -1,6 +1,7 @@
 local draw = require 'draw_utils'
 local button = require 'button'
 local spermAnim = require 'sperm_anim'
+local misc = require 'misc_utils'
 
 return function ()
   local s = {}
@@ -21,19 +22,27 @@ return function ()
 
   local spermTurnawayY = H * 0.34
 
+  local buttonBack = misc.buttonBack()
+
   s.press = function (x, y)
+    if buttonBack.press(x, y) then return true end
   end
 
   s.hover = function (x, y)
+    if buttonBack.move(x, y) then return true end
   end
 
   s.move = function (x, y)
+    if buttonBack.move(x, y) then return true end
   end
 
   s.release = function (x, y)
+    if buttonBack.release(x, y) then return true end
   end
 
   s.update = function ()
+    buttonBack.update()
+
     T = T + 1
 
     for i = 1, #sperms do
@@ -85,6 +94,9 @@ return function ()
       alpha = 1 - (1 - alpha) * (1 - alpha)
       draw.shadow(0.3, 0.3, 0.3, alpha, textHint, W * 0.5, H * 0.8)
     end
+
+    love.graphics.setColor(0.3, 0.3, 0.3)
+    buttonBack.draw()
   end
 
   s.destroy = function ()

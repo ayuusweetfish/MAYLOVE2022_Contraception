@@ -2,6 +2,7 @@ local draw = require 'draw_utils'
 local button = require 'button'
 local spermAnim = require 'sperm_anim'
 local knob = require 'knob'
+local misc = require 'misc_utils'
 
 return function ()
   local s = {}
@@ -49,7 +50,10 @@ return function ()
   local sperms = {}
   local spermGenCounter = -1
 
+  local buttonBack = misc.buttonBack()
+
   s.press = function (x, y)
+    if buttonBack.press(x, y) then return true end
     if buttonConfirm.press(x, y) then return true end
     if knobCondom.press(x, y) then return true end
   end
@@ -58,6 +62,7 @@ return function ()
   end
 
   s.move = function (x, y)
+    if buttonBack.move(x, y) then return true end
     if buttonConfirm.move(x, y) then return true end
     if knobCondom.move(x, y) then
       condomAngle = knobCondom.angle
@@ -66,11 +71,13 @@ return function ()
   end
 
   s.release = function (x, y)
+    if buttonBack.release(x, y) then return true end
     if buttonConfirm.release(x, y) then return true end
     if knobCondom.release(x, y) then return true end
   end
 
   s.update = function ()
+    buttonBack.update()
     buttonConfirm.update()
     if sinceWrong < 360 then sinceWrong = sinceWrong + 1 end
     if sinceCorrect >= 0 and sinceCorrect < 120 then
@@ -166,6 +173,9 @@ return function ()
         s.draw(fnAlpha)
       end
     end
+
+    love.graphics.setColor(0.3, 0.3, 0.3)
+    buttonBack.draw()
   end
 
   s.destroy = function ()
