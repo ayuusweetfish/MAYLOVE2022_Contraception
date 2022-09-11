@@ -31,7 +31,6 @@ local sceneCondom2 = require 'scene_condom_2'
 _G['sceneCondom2'] = sceneCondom2
 
 local curScene = sceneIntro()
-curScene = sceneCondom2()
 local lastScene = nil
 local transitionTimer = 0
 local currentTransition = nil
