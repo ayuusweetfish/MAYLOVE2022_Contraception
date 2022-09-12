@@ -10,8 +10,30 @@ return function ()
 
   local text1 = love.graphics.newText(font[40], '卵子从卵巢出发，停留在输卵管中')
   local text2 = love.graphics.newText(font[40], '一颗精子与卵子结合，形成受精卵')
+  local text3 = love.graphics.newText(font[40], '需要在 72 小时内使用紧急避孕药')
+
+  local textHour = love.graphics.newText(font[40], '时')
+  local textMinute = love.graphics.newText(font[40], '分')
+  local textHourNum, textMinuteNum
+  local textHourFrozen, textMinuteFrozen
 
   local T = 0
+  local timingStart = 4080
+  local timingSpd = 1 -- 4 hours per second
+
+  local updateTimingTexts = function ()
+    local minutes = (T - timingStart) * timingSpd
+    local hours
+    hours, minutes = math.floor(minutes / 60), minutes % 60
+    if hours ~= textHourFrozen then
+      textHourNum = love.graphics.newText(font[60], string.format('%02d', hours))
+      textHourFrozen = hours
+    end
+    if minutes ~= textMinuteFrozen then
+      textMinuteNum = love.graphics.newText(font[60], string.format('%02d', minutes))
+      textMinuteFrozen = minutes
+    end
+  end
 
   local spermGenX = W * 0.5
   local spermGenY = H * 0.9
@@ -142,6 +164,18 @@ return function ()
     elseif T >= 2760 and T < 3600 then
       local alpha = ramps(T, 2760, 3600, 60)
       draw.shadow(0.3, 0.3, 0.3, alpha, text2, W * 0.5, H * 0.8)
+    elseif T >= 4560 then
+      local alpha = ramps(T, 4560, 99999, 60)
+      draw.shadow(0.3, 0.3, 0.3, alpha, text3, W * 0.5, H * 0.8)
+    end
+
+    if T >= timingStart then
+      local alpha = ramps(T, timingStart, 99999, 60)
+      draw.shadow(0.3, 0.3, 0.3, alpha, textHour, W * 0.2, H * 0.43)
+      draw.shadow(0.3, 0.3, 0.3, alpha, textMinute, W * 0.36, H * 0.43)
+      updateTimingTexts()
+      draw.shadow(0.3, 0.3, 0.3, alpha, textHourNum, W * 0.12, H * 0.426)
+      draw.shadow(0.3, 0.3, 0.3, alpha, textMinuteNum, W * 0.28, H * 0.426)
     end
 
     love.graphics.setColor(0.3, 0.3, 0.3)
