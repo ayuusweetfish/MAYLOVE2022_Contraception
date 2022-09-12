@@ -10,7 +10,7 @@ return function ()
 
   local rowY = function (i) return H * (0.59 + 0.2 * (i - 2)) end
 
-  local textTitle = love.graphics.newText(font[60], '设定每日服药的时间')
+  local textTitle = love.graphics.newText(font[40], '设定每日服药的时间')
   local textInitialHint = love.graphics.newText(font[40], '定时每日服药 1 次，持续 21 天')
   local textMiss = love.graphics.newText(font[40],
     '漏服后应尽快在 12 小时内补服，\n否则需重新开始服药周期')
@@ -65,7 +65,7 @@ return function ()
   local pressToContinue = false
 
   local takePill = function ()
-    if dayNum == 27 then
+    if dayNum == 28 then
       replaceScene(sceneShort2())
       return
     end
@@ -234,7 +234,7 @@ return function ()
         else
           textMissAlpha = 1 - (math.min(1, sincePills / 60))^2
         end
-        draw.shadow(0.3, 0.3, 0.3, textMissAlpha, textMiss, W * 0.336, H * 0.8)
+        draw.shadow(0.3, 0.3, 0.3, textMissAlpha, textMiss, W * 0.336, H * 0.822)
       end
       if dayNum == 1 and (untilPills >= 0 or sincePills < 60) then
         draw.shadow(0.3, 0.3, 0.3, pillsAlpha, textInitialHint, W * 0.31, H * 0.822)
@@ -267,10 +267,10 @@ return function ()
         hint2Alpha = 1
       end
       if hint1Alpha > 0 then
-        draw.shadow(0.3, 0.3, 0.3, hint1Alpha, textStopHint1, W * 0.336, H * 0.788)
+        draw.shadow(0.3, 0.3, 0.3, hint1Alpha, textStopHint1, W * 0.31, H * 0.822)
       end
       if hint2Alpha > 0 then
-        draw.shadow(0.3, 0.3, 0.3, hint2Alpha, textStopHint2, W * 0.336, H * 0.788)
+        draw.shadow(0.3, 0.3, 0.3, hint2Alpha, textStopHint2, W * 0.31, H * 0.822)
       end
     end
 
