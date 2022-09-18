@@ -21,7 +21,7 @@ return function ()
     local name, scene = unpack(options[i])
     local button_img = draw.get('icon_' .. name)
     buttons[i] = button(button_img, function ()
-      replaceScene(scene())
+      if scene then replaceScene(scene()) end
     end)
     buttons[i].x = W * (0.5 + 0.22 * (i - 2.5))
     buttons[i].y = H * 0.7
