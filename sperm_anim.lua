@@ -39,5 +39,10 @@ return function (x, y, vx, vy)
     love.graphics.circle('fill', s.x, s.y, 3)
   end
 
+  s.drawDot = function (alpha)
+    love.graphics.setColor(0.1, 0.1, 0.1, alpha)
+    love.graphics.circle('fill', s.x, s.y, 3 * alpha)
+  end
+
   return s
 end
