@@ -19,11 +19,14 @@ return function ()
 
   local T = 0
   local timingStart = 4080
-  local timingSpd = 1 -- 4 hours per second
+  local timingSpd = 1.5 -- 6 hours per second
 
   local updateTimingTexts = function ()
     local minutes = (T - timingStart) * timingSpd
     local hours
+    if minutes >= 2880 then
+      minutes = 4320 - 1440 * math.exp(-1/1440 * (minutes - 2880))
+    end
     hours, minutes = math.floor(minutes / 60), minutes % 60
     if hours ~= textHourFrozen then
       textHourNum = love.graphics.newText(font[60], string.format('%02d', hours))
@@ -34,6 +37,21 @@ return function ()
       textMinuteFrozen = minutes
     end
   end
+
+  local pillShow = timingStart + 20 * 60 / timingSpd
+  local sincePillPress = -1
+  local buttonPill
+  buttonPill = button(
+    draw.get('icon_emergency'),
+    function ()
+      buttonPill.enabled = false
+      sincePillPress = 0
+      print('!')
+    end
+  )
+  buttonPill.enabled = false
+  buttonPill.x = W * 0.78
+  buttonPill.y = H * 0.66
 
   local spermGenX = W * 0.5
   local spermGenY = H * 0.9
@@ -52,22 +70,27 @@ return function ()
 
   s.press = function (x, y)
     if buttonBack.press(x, y) then return true end
+    if buttonPill.press(x, y) then return true end
   end
 
   s.hover = function (x, y)
     if buttonBack.move(x, y) then return true end
+    if buttonPill.move(x, y) then return true end
   end
 
   s.move = function (x, y)
     if buttonBack.move(x, y) then return true end
+    if buttonPill.move(x, y) then return true end
   end
 
   s.release = function (x, y)
     if buttonBack.release(x, y) then return true end
+    if buttonPill.release(x, y) then return true end
   end
 
   s.update = function ()
     buttonBack.update()
+    buttonPill.update()
 
     T = T + 1
 
@@ -115,6 +138,10 @@ return function ()
       if first then s.fert = true end
       sperms[#sperms + 1] = s
     end
+
+    if sincePillPress >= 0 then
+      sincePillPress = sincePillPress + 1
+    end
   end
 
   local ramps = function (x, a, b, w)
@@ -158,6 +185,28 @@ return function ()
       end)
     end
 
+    if T >= timingStart then
+      local alpha = ramps(T, timingStart, 99999, 60)
+      draw.shadow(0.3, 0.3, 0.3, alpha, textHour, W * 0.2, H * 0.43)
+      draw.shadow(0.3, 0.3, 0.3, alpha, textMinute, W * 0.36, H * 0.43)
+      updateTimingTexts()
+      draw.shadow(0.3, 0.3, 0.3, alpha, textHourNum, W * 0.12, H * 0.426)
+      draw.shadow(0.3, 0.3, 0.3, alpha, textMinuteNum, W * 0.28, H * 0.426)
+    end
+
+    if T >= pillShow then
+      local alpha = ramps(T, pillShow, 99999, 60)
+      if sincePillPress == -1 then
+        buttonPill.enabled = true
+      else
+        alpha = alpha * math.max(0, 1 - sincePillPress / 60)
+      end
+      if alpha > 0 then
+        love.graphics.setColor(1, 1, 1, alpha)
+        buttonPill.draw()
+      end
+    end
+
     if T >= 600 and T < 1440 then
       local alpha = ramps(T, 600, 1440, 60)
       draw.shadow(0.3, 0.3, 0.3, alpha, text1, W * 0.5, H * 0.8)
@@ -167,15 +216,6 @@ return function ()
     elseif T >= 4560 then
       local alpha = ramps(T, 4560, 99999, 60)
       draw.shadow(0.3, 0.3, 0.3, alpha, text3, W * 0.5, H * 0.8)
-    end
-
-    if T >= timingStart then
-      local alpha = ramps(T, timingStart, 99999, 60)
-      draw.shadow(0.3, 0.3, 0.3, alpha, textHour, W * 0.2, H * 0.43)
-      draw.shadow(0.3, 0.3, 0.3, alpha, textMinute, W * 0.36, H * 0.43)
-      updateTimingTexts()
-      draw.shadow(0.3, 0.3, 0.3, alpha, textHourNum, W * 0.12, H * 0.426)
-      draw.shadow(0.3, 0.3, 0.3, alpha, textMinuteNum, W * 0.28, H * 0.426)
     end
 
     love.graphics.setColor(0.3, 0.3, 0.3)
