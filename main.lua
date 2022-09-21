@@ -35,6 +35,10 @@ local sceneShort2 = require 'scene_short_2'
 _G['sceneShort2'] = sceneShort2
 local sceneEmerg1 = require 'scene_emerg_1'
 _G['sceneEmerg1'] = sceneEmerg1
+local sceneLigation1 = require 'scene_ligation_1'
+_G['sceneLigation1'] = sceneLigation1
+local sceneLigation2 = require 'scene_ligation_2'
+_G['sceneLigation2'] = sceneLigation2
 
 local curScene = sceneIntro()
 local lastScene = nil

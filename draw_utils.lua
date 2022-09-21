@@ -3,7 +3,7 @@ local imgs = {}
 local files = love.filesystem.getDirectoryItems('res')
 for i = 1, #files do
   local file = files[i]
-  if file:sub(-4) == '.png' then
+  if file:sub(-4) == '.png' or file:sub(-4) == '.jpg' then
     local name = file:sub(1, #file - 4)
     local img = love.graphics.newImage('res/' .. file)
     imgs[name] = img
