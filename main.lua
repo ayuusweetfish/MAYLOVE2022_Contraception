@@ -18,7 +18,7 @@ globalScale = math.min(wDev / W, hDev / H)
 -- Load font
 local font = {}
 for _, size in ipairs({28, 40, 48, 60, 80, 120}) do
-  font[size] = love.graphics.newFont('res/1574853606.ttf', size)
+  font[size] = love.graphics.newFont('res/1574853606_subset.ttf', size)
 end
 _G['font_AaGSKA'] = font
 love.graphics.setFont(font[40])

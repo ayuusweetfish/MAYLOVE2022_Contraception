@@ -4,6 +4,7 @@
 rm -rf build
 mkdir -p build/game
 cp -r *.lua res build/game
+rm build/game/res/1574853606.ttf
 cd build
 
 for f in `find . -name "*.lua"`; do
