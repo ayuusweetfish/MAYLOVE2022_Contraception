@@ -27,17 +27,17 @@ return function ()
         sinceWrong[i] = 0
       end
     end)
-    buttons[i].x = W * 0.3
+    buttons[i].x = W * 0.325
     buttons[i].y = rowY(i)
     buttons[i].s = 0.6
 
     local time
     if i == answer then
-      time = now + 86400 + love.math.random(86400 * 4)
+      time = now + 86400 * 30 + love.math.random(86400 * 90)
     else
-      time = now - 86400 * 5 - love.math.random(86400 * 120)
+      time = now - 86400 * 30 - love.math.random(86400 * 730)
     end
-    local timestr = os.date('%Y.%m.%d', time)
+    local timestr = os.date('%Y.%m', time)
     texts[i] = love.graphics.newText(font[40], '有效期至：' .. timestr)
   end
 
@@ -82,13 +82,13 @@ return function ()
         x = 1 - math.exp(-x * 5) * (1 - x)
         local alpha = x
         love.graphics.setColor(1, 1, 1, alpha)
-        draw.img('cross', W * 0.3, rowY(i), x * 120)
+        draw.img('cross', W * 0.325, rowY(i), x * 120)
       end
     end
 
     draw.shadow(0.3, 0.3, 0.3, 1, textTitle, W * 0.5, H * 0.19)
     for i = 1, 3 do
-      draw.shadow(0.5, 0.5, 0.5, 1, texts[i], W * 0.6, rowY(i))
+      draw.shadow(0.5, 0.5, 0.5, 1, texts[i], W * 0.59, rowY(i))
     end
 
     love.graphics.setColor(0.3, 0.3, 0.3)
