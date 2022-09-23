@@ -12,7 +12,7 @@ return function ()
   local text2 = love.graphics.newText(font[40], '一颗精子与卵子结合，形成受精卵')
   local text3 = love.graphics.newText(font[40], '需要在 72 小时内使用紧急避孕药')
   local text4 = love.graphics.newText(font[40], '因子宫内壁并没有增厚，受精卵无法着床而被排出')
-  local text5 = love.graphics.newText(font[40], '＊紧急避孕药是绝对不是常规的避孕方式！')
+  local text5 = love.graphics.newText(font[40], '＊紧急避孕药绝对不是常规的避孕方式！')
 
   local textHour = love.graphics.newText(font[40], '时')
   local textMinute = love.graphics.newText(font[40], '分')

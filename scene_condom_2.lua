@@ -144,6 +144,11 @@ return function ()
     love.graphics.setColor(1, 1, 1, rotateControlsAlpha)
     draw.shadow(0.3, 0.3, 0.3, rotateControlsAlpha, textTitle, W * 0.5, H * 0.19)
 
+    local px, py = condomX, 0.65 * H
+    local pw, ph = 0.08 * W, 0.3 * H
+    love.graphics.setColor(0.8, 0.8, 0.8, rotateControlsAlpha)
+    love.graphics.rectangle('fill', px - pw / 2, py, pw, ph, pw / 2)
+
     love.graphics.setColor(0, 0, 0, rotateControlsAlpha)
     buttonConfirm.draw()
 
