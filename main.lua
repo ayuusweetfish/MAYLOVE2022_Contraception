@@ -1,7 +1,5 @@
 W = 1080
 H = 720
-Hx = 810
-local offsY = (Hx - H) / 2
 
 local isMobile = (love.system.getOS() == 'Android' or love.system.getOS() == 'iOS')
 local isWeb = (love.system.getOS() == 'Web')
@@ -9,13 +7,16 @@ local isWeb = (love.system.getOS() == 'Web')
 local globalScale
 love.window.setMode(
   isWeb and (W / 3 * 2) or W,
-  isWeb and (Hx / 3 * 2) or Hx,
-  { fullscreen = isMobile, highdpi = true }
+  isWeb and (H / 3 * 2) or H,
+  { fullscreen = not isWeb, highdpi = true }
 )
 love.window.setTitle('Contraception')
 local wDev, hDev = love.graphics.getDimensions()
-W = wDev / hDev * Hx
-globalScale = math.min(wDev / W, hDev / Hx)
+globalScale = math.min(wDev / W, hDev / H)
+local Wx = wDev / globalScale
+local Hx = hDev / globalScale
+local offsX = (Wx - W) / 2
+local offsY = (Hx - H) / 2
 
 -- Load font
 local font = {}
@@ -60,17 +61,17 @@ function love.mousepressed(x, y, button, istouch, presses)
   if button ~= 1 then return end
   if lastScene ~= nil then return end
   mouseScene = curScene
-  curScene.press(x / globalScale, (y - offsY) / globalScale)
+  curScene.press((x - offsX) / globalScale, (y - offsY) / globalScale)
 end
 function love.mousemoved(x, y, button, istouch)
-  curScene.hover(x / globalScale, (y - offsY) / globalScale)
+  curScene.hover((x - offsX) / globalScale, (y - offsY) / globalScale)
   if mouseScene ~= curScene then return end
-  curScene.move(x / globalScale, (y - offsY) / globalScale)
+  curScene.move((x - offsX) / globalScale, (y - offsY) / globalScale)
 end
 function love.mousereleased(x, y, button, istouch, presses)
   if button ~= 1 then return end
   if mouseScene ~= curScene then return end
-  curScene.release(x / globalScale, (y - offsY) / globalScale)
+  curScene.release((x - offsX) / globalScale, (y - offsY) / globalScale)
   mouseScene = nil
 end
 
@@ -107,7 +108,7 @@ transitions['fadeWhite'] = {
       opacity = 2 - x * 2
     end
     love.graphics.setColor(0.95, 0.95, 0.95, opacity)
-    love.graphics.rectangle('fill', 0, -offsY, W, Hx)
+    love.graphics.rectangle('fill', -offsX, -offsY, Wx, Hx)
   end
 }
 
@@ -115,7 +116,7 @@ function love.draw()
   love.graphics.scale(globalScale)
   love.graphics.setColor(1, 1, 1)
   love.graphics.push()
-  love.graphics.translate(0, offsY)
+  love.graphics.translate(offsX, offsY)
   if lastScene ~= nil then
     local x = transitionTimer / currentTransition.dur
     currentTransition.draw(x)
@@ -130,7 +131,9 @@ function love.draw()
 end
 
 function love.keypressed(key)
-  if key == '`' then
-    love.graphics.captureScreenshot(os.time() .. '.png')
+  if key == 'lshift' then
+    if not isMobile and not isWeb then
+      love.window.setFullscreen(not love.window.getFullscreen())
+    end
   end
 end
