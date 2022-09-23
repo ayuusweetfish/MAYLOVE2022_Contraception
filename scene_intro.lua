@@ -4,7 +4,7 @@ local button = require 'button'
 return function ()
   local s = {}
   local W, H = W, H
-  local font = _G['font_AaGSKA']
+  local font = _G['font_Kuaile']
 
   local t1 = love.graphics.newText(font[80], '我从哪里来')
   local t2 = love.graphics.newText(font[48], '选择一种避孕方式')

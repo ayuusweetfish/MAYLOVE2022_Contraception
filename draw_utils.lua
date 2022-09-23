@@ -28,15 +28,16 @@ local img = function (name, x, y, w, h, ax, ay, r)
 end
 
 local shadow = function (R, G, B, A, drawable, x, y, w, h, ax, ay, r)
-  love.graphics.setColor(R / 2, G / 2, B / 2, A * A)
+  love.graphics.setColor(R / 2, G / 2, B / 2, A * A / 2)
   draw(drawable, x + 1, y + 1, w, h, ax, ay, r)
   love.graphics.setColor(R, G, B, A)
   draw(drawable, x - 1, y - 1, w, h, ax, ay, r)
 end
 
-local enclose = function (drawable, w, h)
+local enclose = function (drawable, w, h, extraOffsX, extraOffsY)
   local iw, ih = drawable:getDimensions()
-  local offsX, offsY = (w - iw) / 2, (h - ih) / 2
+  local offsX = (w - iw) / 2 + (extraOffsX or 0)
+  local offsY = (h - ih) / 2 + (extraOffsY or 3)  -- Font specific
   local s = {}
   s.getDimensions = function (self)
     return w, h

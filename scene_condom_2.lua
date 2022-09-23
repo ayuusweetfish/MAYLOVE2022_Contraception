@@ -7,7 +7,7 @@ local misc = require 'misc_utils'
 return function ()
   local s = {}
   local W, H = W, H
-  local font = _G['font_AaGSKA']
+  local font = _G['font_Kuaile']
 
   local textTitle = love.graphics.newText(font[60], '将套套旋转到正确的方向')
   local textSuccessHint = love.graphics.newText(font[40], '精子被隔绝在外，实现避孕')
