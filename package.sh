@@ -20,7 +20,7 @@ mv game/Contraception.zip Contraception.love
 # Windows
 cp -r ${LOVE_WIN} Contraception-windows
 cat Contraception-windows/love.exe Contraception.love > Contraception-windows/MAYLOVE2022_Contraception.exe
-rm Contraception-windows/love.exe
+rm Contraception-windows/{love.exe,OpenAL32.dll,changes.txt,game.ico,license.txt,love.ico,lovec.exe,readme.txt}
 
 zip Contraception-windows -r Contraception-windows
 
