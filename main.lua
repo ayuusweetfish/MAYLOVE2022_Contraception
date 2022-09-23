@@ -4,19 +4,24 @@ H = 720
 local isMobile = (love.system.getOS() == 'Android' or love.system.getOS() == 'iOS')
 local isWeb = (love.system.getOS() == 'Web')
 
-local globalScale
 love.window.setMode(
   isWeb and (W / 3 * 2) or W,
   isWeb and (H / 3 * 2) or H,
   { fullscreen = not isWeb, highdpi = true }
 )
-love.window.setTitle('Contraception')
-local wDev, hDev = love.graphics.getDimensions()
-globalScale = math.min(wDev / W, hDev / H)
-local Wx = wDev / globalScale
-local Hx = hDev / globalScale
-local offsX = (Wx - W) / 2
-local offsY = (Hx - H) / 2
+
+local globalScale, Wx, Hx, offsX, offsY
+
+local updateLogicalDimensions = function ()
+  love.window.setTitle('Contraception')
+  local wDev, hDev = love.graphics.getDimensions()
+  globalScale = math.min(wDev / W, hDev / H)
+  Wx = wDev / globalScale
+  Hx = hDev / globalScale
+  offsX = (Wx - W) / 2
+  offsY = (Hx - H) / 2
+end
+updateLogicalDimensions()
 
 -- Load font
 local font = {}
@@ -134,6 +139,7 @@ function love.keypressed(key)
   if key == 'lshift' then
     if not isMobile and not isWeb then
       love.window.setFullscreen(not love.window.getFullscreen())
+      updateLogicalDimensions()
     end
   end
 end
