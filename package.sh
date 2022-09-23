@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# LOVE_WIN=~/Downloads/love-11.4-win32
+
 # Package .love
 rm -rf build
 mkdir -p build/game
@@ -14,6 +16,13 @@ done
 
 (cd game && zip -r Contraception.zip *)
 mv game/Contraception.zip Contraception.love
+
+# Windows
+cp -r ${LOVE_WIN} Contraception-windows
+cat Contraception-windows/love.exe Contraception.love > Contraception-windows/MAYLOVE2022_Contraception.exe
+rm Contraception-windows/love.exe
+
+zip Contraception-windows -r Contraception-windows
 
 # Web
 love.js --compatibility --title "Contraception" Contraception.love Contraception-web
