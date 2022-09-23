@@ -16,7 +16,7 @@ return function (drawable, fn)
   s.press = function (x, y)
     if not s.enabled then return false end
     if x >= s.x - w/2 and x <= s.x + w/2 and
-       y >= s.y - w/2 and y <= s.y + h/2 then
+       y >= s.y - h/2 and y <= s.y + h/2 then
       held = true
       inside = true
       return true
@@ -29,7 +29,7 @@ return function (drawable, fn)
     if not held then return false end
     inside =
       x >= s.x - w/2 and x <= s.x + w/2 and
-      y >= s.y - w/2 and y <= s.y + h/2
+      y >= s.y - h/2 and y <= s.y + h/2
     return true
   end
 
