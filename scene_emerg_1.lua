@@ -6,7 +6,7 @@ local misc = require 'misc_utils'
 return function ()
   local s = {}
   local W, H = W, H
-  local font = _G['font_Kuaile']
+  local font = _G['font_AaGSKA']
 
   local text1 = love.graphics.newText(font[40], '卵子从卵巢出发，停留在输卵管中')
   local text2 = love.graphics.newText(font[40], '一颗精子与卵子结合，形成受精卵')

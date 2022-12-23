@@ -6,7 +6,7 @@ local misc = require 'misc_utils'
 return function ()
   local s = {}
   local W, H = W, H
-  local font = _G['font_Kuaile']
+  local font = _G['font_AaGSKA']
 
   local textHint = love.graphics.newText(font[40],
     '在激素影响下，粘稠的宫颈粘液阻挡精子，\n本月卵子亦不排出，实现避孕'

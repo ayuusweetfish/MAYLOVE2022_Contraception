@@ -6,7 +6,7 @@ local misc = require 'misc_utils'
 return function ()
   local s = {}
   local W, H = W, H
-  local font = _G['font_Kuaile']
+  local font = _G['font_AaGSKA']
 
   local rowY = function (i) return H * (0.59 + 0.2 * (i - 2)) end
 
